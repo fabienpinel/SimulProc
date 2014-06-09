@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "machine.h"
+#include "instruction.h"
 
 /*!
  * La machine est réinitialisée et ses segments de texte et de données sont
@@ -279,4 +280,77 @@ void dump_memory(Machine *pmach){
 	//Délégation de la production du dump binaire
 	dump_create(pmach);
 
+}
+
+/*! 
+ * Affichage des instructions du programme
+ * Les instructions sont affichées sous forme symbolique, précédées de leur adresse.
+.* 
+ * \param pmach la machine en cours d'exécution
+ */
+void print_program(Machine *pmach){
+	
+	printf("\n### PROGRAM ###\n");
+	
+	//pour chaque instruction on affiche : 
+	for(int i = 0 ; i < pmach->_textsize ; i++){
+		//l'adresse
+		printf("0x%04x : 0x%08x", i, (pmach->_text[i])._raw);
+		//l'instruction
+		print_instruction(pmach->_text[i], i);
+		//saut de ligne
+		printf("\n");
+	}
+
+	//taille du programme
+	printf("\n Program size : %d\n",pmach->_textsize);
+	
+	printf("\n ### END PROGRAM ###");
+}
+
+/*! 
+ * Affichage des données du programme
+ *
+ * Les valeurs sont affichées en format hexadécimal et décimal.
+ *
+ * \param pmach la machine en cours d'exécution
+ */
+void print_data(Machine *pmach){
+	
+	printf("\n### DATA ###\n");
+	
+	//pour chaque data on affiche : 
+	for(int i = 0 ; i < pmach->_datasize ; i++){
+		//l'adresse + data (trois par lignes)
+		printf("0x%04x : 0x%08x (%d)\t %s", i, pmach->_data[i], pmach->_data[i], ((i%3==2) || (i > pmach->_datasize - 1))?"\n":"");
+	}
+
+	//taille des données
+	printf("\nData size : %d\nData end : 0x%08x (%d)\n",pmach->_textsize, pmach->_dataend, pmach->_dataend);
+	
+	printf("\n ### END DATA ###");
+}
+
+/*! 
+ * Affichage des registres du CPU
+ *
+ * Les registres généraux sont affichées en format hexadécimal et décimal.
+ *
+ * \param pmach la machine en cours d'exécution
+ */
+void print_cpu(Machine *pmach){
+
+	printf("\n### REGISTERS ###\n");
+
+	//pour chaque registre on affiche :
+	for(int i = 0 ; i < NREGISTERS ; i++){
+		//trois registres par ligne
+		printf("R%02d : 0x%08x (%d)\t %s", i, pmach->_registers[i], pmach->_registers[i], ((i%3==2) || (i > NREGISTERS - 1))?"\n":"");
+	}
+
+	//on imprime pc et cc
+	printf("PC : 0x%08x (%d) | CC : %s", pmach->_pc, pmach->_pc, 
+		(pmach->_cc == CC_U)?"U":(pmach->_cc == CC_P)?"P":(pmach->_cc == CC_N)?"N":"Z");
+
+	printf("\n ### END REGISTERS ###");
 }
