@@ -9,6 +9,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "machine.h"
 
 /*!
@@ -78,7 +79,7 @@ void read_program(Machine *mach, const char *programfile){
 	unsigned int textsize, datasize, dataend;
 	
 	//on ouvre le programme en lecture seule. 
-	if(!(f = fopen(programfile,'r'))){
+	if(!(f = fopen(programfile,"r"))){
 
 		//Si on rencontre un problème, on quitte l'execution
 		perror("Erreur lors de l'ouverture du fichier dans read_program");
@@ -97,32 +98,29 @@ void read_program(Machine *mach, const char *programfile){
 
 	}
 
+	//variable définissant la taille de la pile
+	int stack_size;
+
 	//On vérifie que la taille pour la pile est suffisante, sinon on la modifie.
-	if((int stack_size = datasize - dataend) < MINSTACKSIZE){
+	if((stack_size = datasize - dataend) < MINSTACKSIZE){
 		
 		stack_size = MINSTACKSIZE;
 	
 	}
 
+	//variable contenant les instuctions du programme
+	Instruction * text;
+
 	//On alloue la mémoire nécessaire à l'accueil des instructions du programme.
-	if(!(Instruction * text = (Instruction *) calloc(textsize, sizeof(Instruction)))){
+	if(!(text = (Instruction *) calloc(textsize, sizeof(Instruction)))){
 		
 		//Si une erreur se produit, on quitte l'exécution.
 		perror("Erreur d'allocation mémoire pour le segment text dans read_program");
 		exit(1);
 
 	} 
-
-	//On alloue la mémoire nécessaire à l'accueil des instructions du programme.
-	if(!(Word * data = (Word *) calloc(dataend + stacksize, sizeof(Word)))){
-		
-		//Si une erreur se produit, on quitte l'exécution.
-		perror("Erreur d'allocation mémoire pour le segment data dans read_program");
-		exit(1);
-
-	}
 	//On lit les instructions du programme
-	if(fread(text, sizeof(Instruction), textsize, f)<0){
+	else if(fread(text, sizeof(Instruction), textsize, f)<0){
 
 		//En cas d'erreur, on quitte l'exécution
 		perror("Erreur lors de la lecture des instructions dans read_program");
@@ -130,8 +128,19 @@ void read_program(Machine *mach, const char *programfile){
 
 	}
 
+	//variable contenant les données du programme
+	Word * data;
+
+	//On alloue la mémoire nécessaire à l'accueil des instructions du programme.
+	if(!(data = (Word *) calloc(dataend + stack_size, sizeof(Word)))){
+		
+		//Si une erreur se produit, on quitte l'exécution.
+		perror("Erreur d'allocation mémoire pour le segment data dans read_program");
+		exit(1);
+
+	} 
 	//On lit les données du programme
-	if(fread(data, sizeof(Word), datasize, f)<0){
+	else if(fread(data, sizeof(Word), datasize, f)<0){
 
 		//En cas d'erreur, on quitte l'exécution
 		perror("Erreur lors de la lecture des données dans read_program");
@@ -144,5 +153,21 @@ void read_program(Machine *mach, const char *programfile){
 
 	//on réinitialise la machine avec les nouvelles données du programme
 	load_program(mach, textsize, text, dataend+stack_size, data, dataend);
+
+}
+
+/*! 
+ * Affichage du programme et des données
+ *
+ * On affiche les instruction et les données en format hexadécimal, sous une
+ * forme prête à être coupée-collée dans le simulateur.
+ *
+ * Pendant qu'on y est, on produit aussi un dump binaire dans le fichier
+ * dump.prog. Le format de ce fichier est compatible avec l'option -b de
+ * test_simul.
+ *
+ * \param pmach la machine en cours d'exécution
+ */
+void dump_memory(Machine *pmach){
 
 }
