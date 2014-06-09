@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include "machine.h"
 #include "instruction.h"
+#include "exec.h"
+#include "debug.h"
 
 /*!
  * La machine est réinitialisée et ses segments de texte et de données sont
@@ -81,72 +83,54 @@ void read_program(Machine *mach, const char *programfile){
 	
 	//on ouvre le programme en lecture seule. 
 	if(!(f = fopen(programfile,"r"))){
-
 		//Si on rencontre un problème, on quitte l'execution
 		perror("Erreur lors de l'ouverture du fichier dans <machine.c:read_program>");
 		exit(1);
-
 	}
 
 	//on lit les 3 entiers non signés textsize, datasize et dataend. 
-	if((fread(&textsize, sizeof(unsigned int), 4, f)<0) 
-		|| (fread(&datasize, sizeof(unsigned int), 4, f)<0)
-		|| (fread(&dataend, sizeof(unsigned int), 4, f)<0)){
-
+	if((fread(&textsize, sizeof(unsigned), 4, f)!=4*sizeof(unsigned)) 
+			|| (fread(&datasize, sizeof(unsigned), 4, f)!=4*sizeof(unsigned))
+			|| (fread(&dataend, sizeof(unsigned), 4, f)!=4*sizeof(unsigned))){
 		//Si on rencontre un problème, on quitte l'exécution. 
 		perror("Erreur lors de la lecture des entiers non signés dans <machine.c:read_program>");
 		exit(1);
-
 	}
 
 	//variable définissant la taille de la pile
-	int stack_size;
-
 	//On vérifie que la taille pour la pile est suffisante, sinon on la modifie.
-	if((stack_size = datasize - dataend) < MINSTACKSIZE){
-		
-		stack_size = MINSTACKSIZE;
-	
-	}
+	int stack_size = (datasize - dataend < MINSTACKSIZE)?MINSTACKSIZE:datasize - dataend;
 
 	//variable contenant les instuctions du programme
 	Instruction * text;
 
 	//On alloue la mémoire nécessaire à l'accueil des instructions du programme.
 	if(!(text = (Instruction *) calloc(textsize, sizeof(Instruction)))){
-		
 		//Si une erreur se produit, on quitte l'exécution.
 		perror("Erreur d'allocation mémoire pour le segment text dans <machine.c:read_program>");
 		exit(1);
-
 	} 
 	//On lit les instructions du programme
-	else if(fread(text, sizeof(Instruction), textsize, f)<0){
-
+	else if(fread(text, sizeof(Instruction), textsize, f)!=textsize*sizeof(Instruction)){
 		//En cas d'erreur, on quitte l'exécution
 		perror("Erreur lors de la lecture des instructions dans <machine.c:read_program>");
 		exit(1);
-
 	}
 
 	//variable contenant les données du programme
 	Word * data;
 
 	//On alloue la mémoire nécessaire à l'accueil des instructions du programme.
-	if(!(data = (Word *) calloc(dataend + stack_size, sizeof(Word)))){
-		
+	if(!(data = (Word *) calloc(dataend + stack_size, sizeof(Word)))){	
 		//Si une erreur se produit, on quitte l'exécution.
 		perror("Erreur d'allocation mémoire pour le segment data dans <machine.c:read_program>");
 		exit(1);
-
 	} 
 	//On lit les données du programme
-	else if(fread(data, sizeof(Word), datasize, f)<0){
-
+	else if(fread(data, sizeof(Word), datasize, f)!=datasize*sizeof(Word)){
 		//En cas d'erreur, on quitte l'exécution
 		perror("Erreur lors de la lecture des données dans <machine.c:read_program>");
 		exit(1);
-
 	}
 
 	//On appelle la fonction fclose() de stio.h et on ferme proprement le fichier.
@@ -168,35 +152,21 @@ void dump_print(Machine *pmach){
 	printf("Instruction text[] = {\n");
 
 	for(int i = 0 ; i< pmach->_textsize; i++){
-
-		//si on commence une nouvelle ligne
-		if(i%4 == 0) printf("	");
-		
-		//affichage d'une instruction
-		printf("Ox%08x, ",(pmach->_text[i])._raw);
-		
-		//au bout de 4 instructions, on change de ligne
-		if((i%4 == 3) || (i > pmach->_textsize -1)) printf("\n");
+		//affichage d'une instruction (tabulation en début de ligne, quattre par ligne séparés par une virgule)
+		printf("%sOx%08x, %s",(i%4 == 0)?"\t":"",(pmach->_text[i])._raw, ((i%4 == 3) || (i > pmach->_textsize -1))?"\n":"");
 	}
 
-	printf("};\nint textsize = %d\n\n", pmach->_textsize);
+	printf("};\nunsigned textsize = %d\n\n", pmach->_textsize);
 
-	//imnpression des donnéess
+	//impression des donnéess
 	printf("Word data[] = {\n");
 
-	for(int i = 0 ; i< pmach->_datasize; i++){
-
-		//si on commence une nouvelle ligne
-		if(i%4 == 0) printf("	");
-		
-		//affichage d'une donnée
-		printf("Ox%08x, ",pmach->_data[i]);
-		
-		//au bout de 4 données, on change de ligne
-		if((i%4 == 3) || (i > pmach->_datasize -1)) printf("\n");
+	for(int i = 0 ; i< pmach->_datasize; i++){		
+		//affichage d'une donnée (tabulation en débt de ligne, quatre par lignes séparés par une virgule)
+		printf("%sOx%08x, %s",(i%4 == 0)?"\t":"", pmach->_data[i],((i%4 == 3) || (i > pmach->_datasize -1))?"\n":"");
 	}
 
-	printf("};\nint datasize = %d", pmach->_datasize);
+	printf("};\nunsigned datasize = %d\nunsigned dataend = %d\n", pmach->_datasize, pmach ->_dataend);
 }
 
 /*!
@@ -209,7 +179,6 @@ void dump_create(Machine *pmach){
 
 	//ouverture en mode ecriture (création si inexistant, remplace sinon)
 	if(!(f = fopen("dump.bin","w+"))){
-
 		//si le fichier n'a pas été ouvert, on quitte l'exécution
 		perror("Erreur lors de l'ouverture du fichier dump.bin dans <machine.c:dump_create>");
 		exit(1);
@@ -217,7 +186,6 @@ void dump_create(Machine *pmach){
 
 	//écriture de textsize
 	if(fwrite(&(pmach->_textsize),sizeof(unsigned), 1, f)!=1){
-
 		//si on écrit plus ou moins d'un caratère, on quitte l'exécution
 		perror("Erreur lors de l'écriture de _textsize dans <machine.c:dump_create>");
 		exit(1);
@@ -225,7 +193,6 @@ void dump_create(Machine *pmach){
 
 	//écriture de datasize
 	if(fwrite(&(pmach->_datasize),sizeof(unsigned), 1, f)!=1){
-
 		//si on écrit plus ou moins d'un caratère, on quitte l'exécution
 		perror("Erreur lors de l'écriture de _datasize dans <machine.c:dump_create>");
 		exit(1);
@@ -233,7 +200,6 @@ void dump_create(Machine *pmach){
 
 	//écriture de dataend
 	if(fwrite(&(pmach->_dataend),sizeof(unsigned), 1, f)!=1){
-
 		//si on écrit plus ou moins d'un caratère, on quitte l'exécution
 		perror("Erreur lors de l'écriture de _dataend dans <machine.c:dump_create>");
 		exit(1);
@@ -241,7 +207,6 @@ void dump_create(Machine *pmach){
 
 	//écriture des instructions
 	if((fwrite(&(pmach->_text),sizeof(Word), pmach->_textsize, f)) != pmach->_textsize){
-
 		//si l'on écrit moins de pmach->_textsize mots de 32 bits, alors on quitte l'exécutions
 		perror("Erreur lors de l'écriture des instructions dans <machine.c:dump_create>");
 		exit(1);
@@ -249,7 +214,6 @@ void dump_create(Machine *pmach){
 
 	//écriture des données
 	if((fwrite(&(pmach->_data),sizeof(Word), pmach->_datasize, f)) != pmach->_datasize){
-
 		//si l'on écrit moins de pmach->_datasize mots de 32 bits, alors on quitte l'exécutions
 		perror("Erreur lors de l'écriture des données dans <machine.c:dump_create>");
 		exit(1);
@@ -273,13 +237,10 @@ void dump_create(Machine *pmach){
  * \param pmach la machine en cours d'exécution
  */
 void dump_memory(Machine *pmach){
-
 	//Délégation de l'affichage	
 	dump_print(pmach);
-	
 	//Délégation de la production du dump binaire
 	dump_create(pmach);
-
 }
 
 /*! 
@@ -295,7 +256,7 @@ void print_program(Machine *pmach){
 	//pour chaque instruction on affiche : 
 	for(int i = 0 ; i < pmach->_textsize ; i++){
 		//l'adresse
-		printf("0x%04x : 0x%08x", i, (pmach->_text[i])._raw);
+		printf("\t0x%04x : 0x%08x", i, (pmach->_text[i])._raw);
 		//l'instruction
 		print_instruction(pmach->_text[i], i);
 		//saut de ligne
@@ -304,8 +265,6 @@ void print_program(Machine *pmach){
 
 	//taille du programme
 	printf("\n Program size : %d\n",pmach->_textsize);
-	
-	printf("\n ### END PROGRAM ###");
 }
 
 /*! 
@@ -322,13 +281,11 @@ void print_data(Machine *pmach){
 	//pour chaque data on affiche : 
 	for(int i = 0 ; i < pmach->_datasize ; i++){
 		//l'adresse + data (trois par lignes)
-		printf("0x%04x : 0x%08x (%d)\t %s", i, pmach->_data[i], pmach->_data[i], ((i%3==2) || (i > pmach->_datasize - 1))?"\n":"");
+		printf("%s0x%04x : 0x%08x %d\t %s", (i%3==0)?"\t":"",i, pmach->_data[i], pmach->_data[i], ((i%3==2) || (i > pmach->_datasize - 1))?"\n":"");
 	}
 
 	//taille des données
-	printf("\nData size : %d\nData end : 0x%08x (%d)\n",pmach->_textsize, pmach->_dataend, pmach->_dataend);
-	
-	printf("\n ### END DATA ###");
+	printf("\nData size : %d\nData end : 0x%08x (%d)\n",pmach->_textsize, pmach->_dataend, pmach->_dataend);	
 }
 
 /*! 
@@ -345,12 +302,33 @@ void print_cpu(Machine *pmach){
 	//pour chaque registre on affiche :
 	for(int i = 0 ; i < NREGISTERS ; i++){
 		//trois registres par ligne
-		printf("R%02d : 0x%08x (%d)\t %s", i, pmach->_registers[i], pmach->_registers[i], ((i%3==2) || (i > NREGISTERS - 1))?"\n":"");
+		printf("%sR%02d : 0x%08x (%d)\t %s", (i%3==0)?"\t":"",i, pmach->_registers[i], pmach->_registers[i], ((i%3==2) || (i > NREGISTERS - 1))?"\n":"");
 	}
 
 	//on imprime pc et cc
 	printf("PC : 0x%08x (%d) | CC : %s", pmach->_pc, pmach->_pc, 
 		(pmach->_cc == CC_U)?"U":(pmach->_cc == CC_P)?"P":(pmach->_cc == CC_N)?"N":"Z");
+}
 
-	printf("\n ### END REGISTERS ###");
+/*!
+ * Simulation
+ *
+ * La boucle de simualtion est très simple : recherche de l'instruction
+ * suivante (pointée par le compteur ordinal \c _pc) puis décodage et exécution
+ * de l'instruction.
+ *
+ * Cette fonction fait appel aux fonctions <exec.c:decode_execute>, <exec.c:trace> et <debug.c:ask_debug>
+ *
+ * \param pmach la machine en cours d'exécution
+ * \param debug mode de mise au point (pas à apas) ?
+ */
+void simul(Machine *pmach, bool debug){
+	do{
+	//on imprime la trace d'execution de l'instruction
+	trace("EXECUTING", pmach, pmach->_text[pmach->_pc], pmach->_pc);
+	//si le parametre debug est vrai, on passe en mode debug
+	if(debug) debug = debug_ask(pmach);
+	} 
+	//tant que pc ne dépasse pas la taille du segment d'instructions et que la procedure decode_execute retourne vrai
+	while(pmach->_pc < pmach->_textsize && decode_execute(pmach, pmach->_text[pmach->_pc]));
 }
