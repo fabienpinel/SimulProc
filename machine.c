@@ -82,7 +82,7 @@ void read_program(Machine *mach, const char *programfile){
 	if(!(f = fopen(programfile,"r"))){
 
 		//Si on rencontre un problème, on quitte l'execution
-		perror("Erreur lors de l'ouverture du fichier dans read_program");
+		perror("Erreur lors de l'ouverture du fichier dans <machine.c:read_program>");
 		exit(1);
 
 	}
@@ -93,7 +93,7 @@ void read_program(Machine *mach, const char *programfile){
 		|| (fread(&dataend, sizeof(unsigned int), 4, f)<0)){
 
 		//Si on rencontre un problème, on quitte l'exécution. 
-		perror("Erreur lors de la lecture des entiers non signés dans read_program");
+		perror("Erreur lors de la lecture des entiers non signés dans <machine.c:read_program>");
 		exit(1);
 
 	}
@@ -115,7 +115,7 @@ void read_program(Machine *mach, const char *programfile){
 	if(!(text = (Instruction *) calloc(textsize, sizeof(Instruction)))){
 		
 		//Si une erreur se produit, on quitte l'exécution.
-		perror("Erreur d'allocation mémoire pour le segment text dans read_program");
+		perror("Erreur d'allocation mémoire pour le segment text dans <machine.c:read_program>");
 		exit(1);
 
 	} 
@@ -123,7 +123,7 @@ void read_program(Machine *mach, const char *programfile){
 	else if(fread(text, sizeof(Instruction), textsize, f)<0){
 
 		//En cas d'erreur, on quitte l'exécution
-		perror("Erreur lors de la lecture des instructions dans read_program");
+		perror("Erreur lors de la lecture des instructions dans <machine.c:read_program>");
 		exit(1);
 
 	}
@@ -135,7 +135,7 @@ void read_program(Machine *mach, const char *programfile){
 	if(!(data = (Word *) calloc(dataend + stack_size, sizeof(Word)))){
 		
 		//Si une erreur se produit, on quitte l'exécution.
-		perror("Erreur d'allocation mémoire pour le segment data dans read_program");
+		perror("Erreur d'allocation mémoire pour le segment data dans <machine.c:read_program>");
 		exit(1);
 
 	} 
@@ -143,7 +143,7 @@ void read_program(Machine *mach, const char *programfile){
 	else if(fread(data, sizeof(Word), datasize, f)<0){
 
 		//En cas d'erreur, on quitte l'exécution
-		perror("Erreur lors de la lecture des données dans read_program");
+		perror("Erreur lors de la lecture des données dans <machine.c:read_program>");
 		exit(1);
 
 	}
@@ -155,6 +155,109 @@ void read_program(Machine *mach, const char *programfile){
 	load_program(mach, textsize, text, dataend+stack_size, data, dataend);
 
 }
+
+/*!
+ * Délégation de l'affichage du programme et des données par dump_memory()
+ * 
+ * \param pmach la machine en cours d'exécution
+ */
+void dump_print(Machine *pmach){
+	
+	//impression des instructions
+	printf("Instruction text[] = {\n");
+
+	for(int i = 0 ; i< pmach->_textsize; i++){
+
+		//si on commence une nouvelle ligne
+		if(i%4 == 0) printf("	");
+		
+		//affichage d'une instruction
+		printf("Ox%08x, ",(pmach->_text[i])._raw);
+		
+		//au bout de 4 instructions, on change de ligne
+		if((i%4 == 3) || (i > pmach->_textsize -1)) printf("\n");
+	}
+
+	printf("};\nint textsize = %d\n\n", pmach->_textsize);
+
+	//imnpression des donnéess
+	printf("Word data[] = {\n");
+
+	for(int i = 0 ; i< pmach->_datasize; i++){
+
+		//si on commence une nouvelle ligne
+		if(i%4 == 0) printf("	");
+		
+		//affichage d'une donnée
+		printf("Ox%08x, ",pmach->_data[i]);
+		
+		//au bout de 4 données, on change de ligne
+		if((i%4 == 3) || (i > pmach->_datasize -1)) printf("\n");
+	}
+
+	printf("};\nint datasize = %d", pmach->_datasize);
+}
+
+/*!
+ * Délégation de la création du dump binaire par dump_memory()
+ * 
+ * \param pmach la machine en cours d'exécution
+ */
+void dump_create(Machine *pmach){
+	FILE * f;
+
+	//ouverture en mode ecriture (création si inexistant, remplace sinon)
+	if(!(f = fopen("dump.bin","w+"))){
+
+		//si le fichier n'a pas été ouvert, on quitte l'exécution
+		perror("Erreur lors de l'ouverture du fichier dump.bin dans <machine.c:dump_create>");
+		exit(1);
+	}
+
+	//écriture de textsize
+	if(fwrite(&(pmach->_textsize),sizeof(unsigned), 1, f)!=1){
+
+		//si on écrit plus ou moins d'un caratère, on quitte l'exécution
+		perror("Erreur lors de l'écriture de _textsize dans <machine.c:dump_create>");
+		exit(1);
+	}
+
+	//écriture de datasize
+	if(fwrite(&(pmach->_datasize),sizeof(unsigned), 1, f)!=1){
+
+		//si on écrit plus ou moins d'un caratère, on quitte l'exécution
+		perror("Erreur lors de l'écriture de _datasize dans <machine.c:dump_create>");
+		exit(1);
+	}
+
+	//écriture de dataend
+	if(fwrite(&(pmach->_dataend),sizeof(unsigned), 1, f)!=1){
+
+		//si on écrit plus ou moins d'un caratère, on quitte l'exécution
+		perror("Erreur lors de l'écriture de _dataend dans <machine.c:dump_create>");
+		exit(1);
+	}
+
+	//écriture des instructions
+	if((fwrite(&(pmach->_text),sizeof(Word), pmach->_textsize, f)) != pmach->_textsize){
+
+		//si l'on écrit moins de pmach->_textsize mots de 32 bits, alors on quitte l'exécutions
+		perror("Erreur lors de l'écriture des instructions dans <machine.c:dump_create>");
+		exit(1);
+	}
+
+	//écriture des données
+	if((fwrite(&(pmach->_data),sizeof(Word), pmach->_datasize, f)) != pmach->_datasize){
+
+		//si l'on écrit moins de pmach->_datasize mots de 32 bits, alors on quitte l'exécutions
+		perror("Erreur lors de l'écriture des données dans <machine.c:dump_create>");
+		exit(1);
+	}
+
+	//on ferme proprement le fichier ouvert
+	fclose(f);
+}
+
 
 /*! 
  * Affichage du programme et des données
@@ -169,5 +272,11 @@ void read_program(Machine *mach, const char *programfile){
  * \param pmach la machine en cours d'exécution
  */
 void dump_memory(Machine *pmach){
+
+	//Délégation de l'affichage	
+	dump_print(pmach);
+	
+	//Délégation de la production du dump binaire
+	dump_create(pmach);
 
 }
