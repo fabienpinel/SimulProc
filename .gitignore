@@ -3,6 +3,8 @@
 *.ko
 *.obj
 *.elf
+dump.bin
+test_simul
 
 # Libraries
 *.lib
