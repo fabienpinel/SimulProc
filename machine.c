@@ -95,7 +95,7 @@ void read_program(Machine *mach, const char *programfile){
 		//Si on rencontre un problème, on quitte l'exécution. 
 		perror("Erreur lors de la lecture de textsize non signés dans <machine.c:read_program>");
 		exit(1);
-	}
+	} else printf("%d\n\n", (int) textsize);
 			
 	if(fread(&datasize, sizeof(unsigned), 1, f)!=1){
 		//Si on rencontre un problème, on quitte l'exécution. 
@@ -165,7 +165,8 @@ void dump_print(Machine *pmach){
 
 	for(int i = 0 ; i< pmach->_textsize; i++){
 		//affichage d'une instruction (tabulation en début de ligne, quattre par ligne séparés par une virgule)
-		printf("%sOx%08x, %s",(i%4 == 0)?"\t":"",(pmach->_text[i])._raw, ((i%4 == 3) || (i >= pmach->_textsize -1))?"\n":"");
+		printf("%sOx%08x, %s",(i%4 == 0)?"\t":"",(pmach->_text[i])._raw, ((i%4 == 3) 
+			|| (i >= pmach->_textsize -1))?"\n":"");
 	}
 
 	printf("};\nunsigned textsize = %d\n\n", pmach->_textsize);
@@ -175,7 +176,8 @@ void dump_print(Machine *pmach){
 
 	for(int i = 0 ; i< pmach->_datasize; i++){		
 		//affichage d'une donnée (tabulation en débt de ligne, quatre par lignes séparés par une virgule)
-		printf("%sOx%08x, %s",(i%4 == 0)?"\t":"", pmach->_data[i],((i%4 == 3) || (i >= pmach->_datasize -1))?"\n":"");
+		printf("%sOx%08x, %s",(i%4 == 0)?"\t":"", pmach->_data[i],((i%4 == 3) 
+			|| (i >= pmach->_datasize -1))?"\n":"");
 	}
 
 	printf("};\nunsigned datasize = %d\nunsigned dataend = %d\n", pmach->_datasize, pmach ->_dataend);
@@ -293,7 +295,8 @@ void print_data(Machine *pmach){
 	//pour chaque data on affiche : 
 	for(int i = 0 ; i < pmach->_datasize ; i++){
 		//l'adresse + data (trois par lignes)
-		printf("%s0x%04x : 0x%08x %-8d\t %s", (i%3==0)?"\t":"",i, pmach->_data[i], pmach->_data[i], ((i%3==2) || (i > pmach->_datasize - 1))?"\n":"");
+		printf("%s0x%04x : 0x%08x %-8d\t %s", (i%3==0)?"\t":"",i, pmach->_data[i], pmach->_data[i], ((i%3==2) 
+			|| (i > pmach->_datasize - 1))?"\n":"");
 	}
 
 	//taille des données
@@ -314,7 +317,8 @@ void print_cpu(Machine *pmach){
 	//pour chaque registre on affiche :
 	for(int i = 0 ; i < NREGISTERS ; i++){
 		//trois registres par ligne
-		printf("%sR%02d : 0x%08x %-8d\t %s", (i%3==0)?"\t":"",i, pmach->_registers[i], pmach->_registers[i], ((i%3==2) || (i >= NREGISTERS - 1))?"\n":"");
+		printf("%sR%02d : 0x%08x %-8d\t %s", (i%3==0)?"\t":"",i, pmach->_registers[i], pmach->_registers[i], ((i%3==2) 
+			|| (i >= NREGISTERS - 1))?"\n":"");
 	}
 
 	//on imprime pc et cc
@@ -340,9 +344,8 @@ void simul(Machine *pmach, bool debug){
 	trace("EXECUTING", pmach, pmach->_text[pmach->_pc], pmach->_pc);
 	//si le parametre debug est vrai, on passe en mode debug
 	if(debug) debug = debug_ask(pmach);
+	if(pmach->_pc >= pmach -> _textsize) error(ERR_SEGTEXT, pmach->_pc);
 	} 
 	//tant que pc ne dépasse pas la taille du segment d'instructions et que la procedure decode_execute retourne vrai
-	while(pmach->_pc < pmach->_textsize && decode_execute(pmach, pmach->_text[pmach->_pc++]));
-	if(pmach->_pc >= pmach->_textsize) 
-		error(ERR_SEGTEXT, pmach->_pc);
+	while(pmach->_pc < pmach->_textsize	&& decode_execute(pmach, pmach->_text[pmach->_pc++]));
 }

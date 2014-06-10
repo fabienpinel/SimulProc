@@ -3,8 +3,6 @@
 *.ko
 *.obj
 *.elf
-dump.bin
-test_simul
 
 # Libraries
 *.lib
@@ -22,3 +20,8 @@ test_simul
 *.i*86
 *.x86_64
 *.hex
+
+# Other
+dump.bin
+test_simul
+prog.c
