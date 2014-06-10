@@ -89,11 +89,21 @@ void read_program(Machine *mach, const char *programfile){
 	}
 
 	//on lit les 3 entiers non signés textsize, datasize et dataend. 
-	if((fread(&textsize, sizeof(unsigned), 4, f)!=4*sizeof(unsigned)) 
-			|| (fread(&datasize, sizeof(unsigned), 4, f)!=4*sizeof(unsigned))
-			|| (fread(&dataend, sizeof(unsigned), 4, f)!=4*sizeof(unsigned))){
+	if(fread(&textsize, sizeof(unsigned), 1, f)!=1){
 		//Si on rencontre un problème, on quitte l'exécution. 
-		perror("Erreur lors de la lecture des entiers non signés dans <machine.c:read_program>");
+		perror("Erreur lors de la lecture de textsize non signés dans <machine.c:read_program>");
+		exit(1);
+	}
+			
+	if(fread(&datasize, sizeof(unsigned), 1, f)!=1){
+		//Si on rencontre un problème, on quitte l'exécution. 
+		perror("Erreur lors de la lecture de datasize non signés dans <machine.c:read_program>");
+		exit(1);
+	}
+	
+	if(fread(&dataend, sizeof(unsigned), 1, f)!=1){
+		//Si on rencontre un problème, on quitte l'exécution. 
+		perror("Erreur lors de la lecture de dataend non signés dans <machine.c:read_program>");
 		exit(1);
 	}
 
@@ -111,7 +121,7 @@ void read_program(Machine *mach, const char *programfile){
 		exit(1);
 	} 
 	//On lit les instructions du programme
-	else if(fread(text, sizeof(Instruction), textsize, f)!=textsize*sizeof(Instruction)){
+	else if(fread(text, sizeof(Instruction), textsize, f)!=textsize){
 		//En cas d'erreur, on quitte l'exécution
 		perror("Erreur lors de la lecture des instructions dans <machine.c:read_program>");
 		exit(1);
@@ -127,7 +137,7 @@ void read_program(Machine *mach, const char *programfile){
 		exit(1);
 	} 
 	//On lit les données du programme
-	else if(fread(data, sizeof(Word), datasize, f)!=datasize*sizeof(Word)){
+	else if(fread(data, sizeof(Word), datasize, f)!=datasize){
 		//En cas d'erreur, on quitte l'exécution
 		perror("Erreur lors de la lecture des données dans <machine.c:read_program>");
 		exit(1);
@@ -153,7 +163,7 @@ void dump_print(Machine *pmach){
 
 	for(int i = 0 ; i< pmach->_textsize; i++){
 		//affichage d'une instruction (tabulation en début de ligne, quattre par ligne séparés par une virgule)
-		printf("%sOx%08x, %s",(i%4 == 0)?"\t":"",(pmach->_text[i])._raw, ((i%4 == 3) || (i > pmach->_textsize -1))?"\n":"");
+		printf("%sOx%08x, %s",(i%4 == 0)?"\t":"",(pmach->_text[i])._raw, ((i%4 == 3) || (i >= pmach->_textsize -1))?"\n":"");
 	}
 
 	printf("};\nunsigned textsize = %d\n\n", pmach->_textsize);
@@ -163,7 +173,7 @@ void dump_print(Machine *pmach){
 
 	for(int i = 0 ; i< pmach->_datasize; i++){		
 		//affichage d'une donnée (tabulation en débt de ligne, quatre par lignes séparés par une virgule)
-		printf("%sOx%08x, %s",(i%4 == 0)?"\t":"", pmach->_data[i],((i%4 == 3) || (i > pmach->_datasize -1))?"\n":"");
+		printf("%sOx%08x, %s",(i%4 == 0)?"\t":"", pmach->_data[i],((i%4 == 3) || (i >= pmach->_datasize -1))?"\n":"");
 	}
 
 	printf("};\nunsigned datasize = %d\nunsigned dataend = %d\n", pmach->_datasize, pmach ->_dataend);
@@ -251,12 +261,12 @@ void dump_memory(Machine *pmach){
  */
 void print_program(Machine *pmach){
 	
-	printf("\n### PROGRAM ###\n");
+	printf("\n### PROGRAM ###\n\n");
 	
 	//pour chaque instruction on affiche : 
 	for(int i = 0 ; i < pmach->_textsize ; i++){
 		//l'adresse
-		printf("\t0x%04x : 0x%08x", i, (pmach->_text[i])._raw);
+		printf("\t0x%04x : 0x%08x\t", i, (pmach->_text[i])._raw);
 		//l'instruction
 		print_instruction(pmach->_text[i], i);
 		//saut de ligne
@@ -276,16 +286,16 @@ void print_program(Machine *pmach){
  */
 void print_data(Machine *pmach){
 	
-	printf("\n### DATA ###\n");
+	printf("\n### DATA ###\n\n");
 	
 	//pour chaque data on affiche : 
 	for(int i = 0 ; i < pmach->_datasize ; i++){
 		//l'adresse + data (trois par lignes)
-		printf("%s0x%04x : 0x%08x %d\t %s", (i%3==0)?"\t":"",i, pmach->_data[i], pmach->_data[i], ((i%3==2) || (i > pmach->_datasize - 1))?"\n":"");
+		printf("%s0x%04x : 0x%08x %-8d\t %s", (i%3==0)?"\t":"",i, pmach->_data[i], pmach->_data[i], ((i%3==2) || (i > pmach->_datasize - 1))?"\n":"");
 	}
 
 	//taille des données
-	printf("\nData size : %d\nData end : 0x%08x (%d)\n",pmach->_textsize, pmach->_dataend, pmach->_dataend);	
+	printf("\n\nData size : %d\nData end : 0x%08x (%d)\n",pmach->_datasize, pmach->_dataend, pmach->_dataend);	
 }
 
 /*! 
@@ -297,16 +307,16 @@ void print_data(Machine *pmach){
  */
 void print_cpu(Machine *pmach){
 
-	printf("\n### REGISTERS ###\n");
+	printf("\n### REGISTERS ###\n\n");
 
 	//pour chaque registre on affiche :
 	for(int i = 0 ; i < NREGISTERS ; i++){
 		//trois registres par ligne
-		printf("%sR%02d : 0x%08x (%d)\t %s", (i%3==0)?"\t":"",i, pmach->_registers[i], pmach->_registers[i], ((i%3==2) || (i > NREGISTERS - 1))?"\n":"");
+		printf("%sR%02d : 0x%08x %-8d\t %s", (i%3==0)?"\t":"",i, pmach->_registers[i], pmach->_registers[i], ((i%3==2) || (i >= NREGISTERS - 1))?"\n":"");
 	}
 
 	//on imprime pc et cc
-	printf("PC : 0x%08x (%d) | CC : %s", pmach->_pc, pmach->_pc, 
+	printf("\nPC : 0x%08x (%d) | CC : %s\n", pmach->_pc, pmach->_pc, 
 		(pmach->_cc == CC_U)?"U":(pmach->_cc == CC_P)?"P":(pmach->_cc == CC_N)?"N":"Z");
 }
 
@@ -330,34 +340,5 @@ void simul(Machine *pmach, bool debug){
 	if(debug) debug = debug_ask(pmach);
 	} 
 	//tant que pc ne dépasse pas la taille du segment d'instructions et que la procedure decode_execute retourne vrai
-	while(pmach->_pc < pmach->_textsize && decode_execute(pmach, pmach->_text[pmach->_pc]));
-}
-
-int main(int argc, char* argv[]) {
-	Machine mach;
-	Instruction text[3] = { 2, 4, 11};	
-	Word data[2] = { 1, 2};	
-	
-	load_program(&mach, 3, text, 2, data,  3);
-    
-	printf("\n*** Machine state before execution ***\n");
-	print_program(&mach);
-	print_data(&mach);
-
-	printf("\n\nDump memory\n");
-	dump_memory(&mach);
-	
-	print_cpu(&mach);
-
-	printf("\n*** Read a binary file ***\n");	
-	if(argc > 1)
-		read_program(&mach, argv[1]);
-	print_program(&mach);
-	print_data(&mach);
-	print_cpu(&mach);
-
-	simul(&mach, true);
-
-
-	return 0;	
+	while(pmach->_pc < pmach->_textsize && decode_execute(pmach, pmach->_text[pmach->_pc++]));
 }
