@@ -332,3 +332,32 @@ void simul(Machine *pmach, bool debug){
 	//tant que pc ne dépasse pas la taille du segment d'instructions et que la procedure decode_execute retourne vrai
 	while(pmach->_pc < pmach->_textsize && decode_execute(pmach, pmach->_text[pmach->_pc]));
 }
+
+int main(int argc, char* argv[]) {
+	Machine mach;
+	Instruction text[3] = { 2, 4, 11};	
+	Word data[2] = { 1, 2};	
+	
+	load_program(&mach, 3, text, 2, data,  3);
+    
+	printf("\n*** Machine state before execution ***\n");
+	print_program(&mach);
+	print_data(&mach);
+
+	printf("\n\nDump memory\n");
+	dump_memory(&mach);
+	
+	print_cpu(&mach);
+
+	printf("\n*** Read a binary file ***\n");	
+	if(argc > 1)
+		read_program(&mach, argv[1]);
+	print_program(&mach);
+	print_data(&mach);
+	print_cpu(&mach);
+
+	simul(&mach, true);
+
+
+	return 0;	
+}
