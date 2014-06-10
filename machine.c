@@ -14,6 +14,8 @@
 #include "instruction.h"
 #include "exec.h"
 #include "debug.h"
+#include "error.h"
+
 
 /*!
  * La machine est réinitialisée et ses segments de texte et de données sont
@@ -216,14 +218,14 @@ void dump_create(Machine *pmach){
 	}
 
 	//écriture des instructions
-	if((fwrite(&(pmach->_text),sizeof(Word), pmach->_textsize, f)) != pmach->_textsize){
+	if((fwrite(&(pmach->_text->_raw),sizeof(Word), pmach->_textsize, f)) != pmach->_textsize){
 		//si l'on écrit moins de pmach->_textsize mots de 32 bits, alors on quitte l'exécutions
 		perror("Erreur lors de l'écriture des instructions dans <machine.c:dump_create>");
 		exit(1);
 	}
 
 	//écriture des données
-	if((fwrite(&(pmach->_data),sizeof(Word), pmach->_datasize, f)) != pmach->_datasize){
+	if((fwrite(pmach->_data,sizeof(Word), pmach->_datasize, f)) != pmach->_datasize){
 		//si l'on écrit moins de pmach->_datasize mots de 32 bits, alors on quitte l'exécutions
 		perror("Erreur lors de l'écriture des données dans <machine.c:dump_create>");
 		exit(1);
@@ -341,4 +343,6 @@ void simul(Machine *pmach, bool debug){
 	} 
 	//tant que pc ne dépasse pas la taille du segment d'instructions et que la procedure decode_execute retourne vrai
 	while(pmach->_pc < pmach->_textsize && decode_execute(pmach, pmach->_text[pmach->_pc++]));
+	if(pmach->_pc >= pmach->_textsize) 
+		error(ERR_SEGTEXT, pmach->_pc);
 }
