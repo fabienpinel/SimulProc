@@ -23,14 +23,14 @@
 void error(Error err, unsigned addr){
 	char *err_to_print = "";
 	switch(err){
-		case ERR_NOERROR: err_to_print="NOERROR";
-		case ERR_UNKNOWN: err_to_print="UNKNOWN";
-		case ERR_ILLEGAL: err_to_print="ILLEGAL";
-		case ERR_CONDITION: err_to_print="CONDITION";
-		case ERR_IMMEDIATE: err_to_print="IMMEDIATE";
-		case ERR_SEGTEXT: err_to_print="SEGTEXT";
-		case ERR_SEGDATA: err_to_print="SEGDATA";
-		case ERR_SEGSTACK: err_to_print="SEGSTACK";
+		case ERR_NOERROR: err_to_print="NOERROR";break;
+		case ERR_UNKNOWN: err_to_print="UNKNOWN";break;
+		case ERR_ILLEGAL: err_to_print="ILLEGAL";break;
+		case ERR_CONDITION: err_to_print="CONDITION";break;
+		case ERR_IMMEDIATE: err_to_print="IMMEDIATE";break;
+		case ERR_SEGTEXT: err_to_print="SEGTEXT";break;
+		case ERR_SEGDATA: err_to_print="SEGDATA";break;
+		case ERR_SEGSTACK: err_to_print="SEGSTACK";break;
 		default: err_to_print="SEGSTACK";
 	}
 	fprintf(stderr, "Erreur %s à l'adresse 0x%x.\n", err_to_print, addr);
@@ -45,7 +45,7 @@ void error(Error err, unsigned addr){
 void warning(Warning warn, unsigned addr){
 	char *warn_to_print = "";
 	switch(warn){
-		case WARN_HALT: warn_to_print="HALT";
+		case WARN_HALT: warn_to_print="HALT";break;
 		default: warn_to_print="HALT";
 	}
 	fprintf(stderr, "Warning %s à l'adresse 0x%x.\n", warn_to_print, addr);
