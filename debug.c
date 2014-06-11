@@ -4,7 +4,8 @@
  * \author {L. GIN, A. EL-AMRANI, F. PINEL, C. BOINAUD}
  */
 #include <stdbool.h>
-
+#include <stdlib.h>
+#include <stdio.h>
 #include "machine.h"
 
 #include "debug.h"
@@ -22,6 +23,7 @@
  * \return vrai si l'on doit continuer en mode debug, faux sinon
  */
 bool debug_ask(Machine *pmach){
+	int c;
 	while(true){
 		printf("DEBUG? ");
         c = getchar();
@@ -29,7 +31,6 @@ bool debug_ask(Machine *pmach){
         switch(c){
         	case '\n': return true; break;
         	case 'c': return false; break;
-
 
 
         }
