@@ -30,11 +30,7 @@ DOXYGEN = doxygen
 HDR = $(wildcard *.h)
 
 # CHANGER LA DÉFINITION DE CETTE VARIABLE (USERSRC) POUR Y INDIQUER VOS PROPRES MODULES
-<<<<<<< HEAD
-USERSRC = machine.c error.c prog.c instruction.c
-=======
-USERSRC = machine.c error.c prog.c debug.c
->>>>>>> b14514ef1c8730b9bd2649301284b5bcb945328b
+USERSRC = machine.c error.c prog.c instruction.c debug.c
 USEROBJ = $(patsubst %.c,%.o,$(USERSRC))
 
 PROG = test_simul
