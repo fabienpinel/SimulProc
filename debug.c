@@ -22,5 +22,23 @@
  * \return vrai si l'on doit continuer en mode debug, faux sinon
  */
 bool debug_ask(Machine *pmach){
+	while(true){
+		printf("DEBUG? ");
+        c = getchar();
+
+        switch(c){
+        	case '\n': return true; break;
+        	case 'c': return false; break;
+
+
+
+        }
+
+
+
+
+	}
+	printf("\n");
+	return false;
 
 }
