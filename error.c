@@ -4,6 +4,7 @@
  * \author {L. GIN, A. EL-AMRANI, F. PINEL, C. BOINAUD}
  */
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "error.h"
