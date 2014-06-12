@@ -339,9 +339,9 @@ void print_cpu(Machine *pmach){
  * \param debug mode de mise au point (pas à apas) ?
  */
 void simul(Machine *pmach, bool debug){
-	unsigned pc = pmach->_pc;
+	unsigned pc;
 	do{
-	unsigned pc = pmach->_pc++;
+	pc = pmach->_pc++;
 	//on imprime la trace d'execution de l'instruction
 	trace("EXECUTING", pmach, pmach->_text[pc], pc);
 	//si le parametre debug est vrai, on passe en mode debug
