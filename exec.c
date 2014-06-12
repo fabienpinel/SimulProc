@@ -129,7 +129,7 @@ void check_seg_stack(Machine *pmach, unsigned addr_mem) {
  */
 void check_seg_registers(Machine *pmach, unsigned reg) {
 	if(reg < 0 || reg > NREGISTERS - 1) {
-		error(ERR_ILLEGAL, pmach->_pc-1);
+		error(ERR_UNKNOWN, pmach->_pc-1);
 	}
 }
 
