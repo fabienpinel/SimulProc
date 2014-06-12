@@ -64,10 +64,6 @@ bool debug_ask(Machine *pmach){
         		break;
 
         }
-
-
-
-
 	}
 	printf("\n");
 	return false;
