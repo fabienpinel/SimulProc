@@ -64,10 +64,12 @@ bool debug_ask(Machine *pmach){
         		break;
 
         }
-
-
-
-
+        /* On vide sdin pour ne pas que cela soit interpreté comme des commandes  */
+        int t;
+        do
+        {
+            t = getchar();
+        } while(t != '\n' && t != EOF);
 	}
 	printf("\n");
 	return false;
