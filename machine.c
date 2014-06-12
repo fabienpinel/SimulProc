@@ -339,7 +339,6 @@ void print_cpu(Machine *pmach){
  * \param debug mode de mise au point (pas à apas) ?
  */
 void simul(Machine *pmach, bool debug){
-	unsigned pc = pmach->_pc;
 	do{
 	unsigned pc = pmach->_pc++;
 	//on imprime la trace d'execution de l'instruction
@@ -349,5 +348,5 @@ void simul(Machine *pmach, bool debug){
 	if(pc >= pmach -> _textsize) error(ERR_SEGTEXT, pc);
 	}
 	//tant que pc ne dépasse pas la taille du segment d'instructions et que la procedure decode_execute retourne vrai
-	while(pc < pmach->_textsize	&& decode_execute(pmach, pmach->_text[pc]));
+	while(pmach->_pc < pmach->_textsize	&& decode_execute(pmach, pmach->_text[pmach->_pc]));
 }
