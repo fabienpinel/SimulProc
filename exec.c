@@ -92,7 +92,7 @@ void update_CC(Machine *pmach, unsigned reg) {
 		pmach->_cc = CC_N;
 	} else if (contenu > 0) {
 		pmach->_cc = CC_P;
-	} else {
+	} else { //contenu == 0
 		pmach->_cc = CC_Z;
 	}
 }
@@ -102,11 +102,10 @@ void update_CC(Machine *pmach, unsigned reg) {
  * Si on est en-dehors du segment, on affiche une erreur (arrêt programme)
  * \param pmach la machine/programme en cours d'exécution
  * \param addr_mem l'adresse mémoire à laquelle on veut accéder
- * \param addr_instr l'adresse de l'instruction à exécuter
  */
-void check_seg_data(Machine *pmach, unsigned addr_mem, unsigned addr_instr) {
-	if(addr_mem < 0 || addr_mem >= pmach->_dataend) {
-		error(ERR_SEGDATA, addr_instr);
+void check_seg_data(Machine *pmach, unsigned addr_mem) {
+	if(addr_mem < 0 || addr_mem > pmach->_datasize-1) {
+		error(ERR_SEGDATA, pmach->_pc-1);
 	}
 }
 
@@ -134,7 +133,7 @@ void check_seg_registers(Machine *pmach, unsigned reg) {
 	}
 }
 
-//! Génère une adresse valide en fonction qu'elle soit indexée ou non
+//! Génère une adresse valide selon si elle est indexée ou absolu
 /*!
  * Si l'adresse n'est pas valide, on affiche une erreur (arrêt de l'exécution)
  * \param pmach la machine/programme en cours d'exécution
@@ -149,8 +148,8 @@ unsigned generate_address(Machine *pmach, Instruction instr){
 	} else {
 		address = instr.instr_absolute._address;
 	}
-	// Vérifie que l'adresse est vaide
-	check_seg_data(pmach,address,pmach->_pc-1);
+	// Vérifie que l'adresse est valide
+	check_seg_data(pmach,address);
 	return address;
 }
 
