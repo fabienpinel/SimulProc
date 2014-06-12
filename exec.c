@@ -29,54 +29,26 @@ void check_immediate(Instruction instr, unsigned addr) {
  * \return vrai si la condition est satisfaite, faux sinon
  * 
  */
-bool check_condition(unsigned cond, Condition_Code cc, unsigned addr) {
-	int satisfied = true;
-	switch(cond){
-		// Pas de condition, donc toujours vrai
-		case NC :
-			break;
-		// Le résultat précédent doit être nul
-		case EQ : 
-			if(cc  != CC_Z) {
-				satisfied = false;
-			}
-			break;
-		// Le résultat précédent doit être non nul
-		case NE : 
-			if(cc == CC_Z) {
-				satisfied = false;
-			}
-			break;
-		// Le résultat précédent doit être strictement positif
-		case GT : 
-			if(cc != CC_P) {
-				satisfied = false;
-			}
-			break;
-		// Le résultat précédent doit être positif ou nul
-		case GE :
-			if(cc != CC_P && cc != CC_Z) {
-				satisfied = false;
-			}
-			break;
-		// Le résultat précédent doit être strictement négatif
-		case LT :
-			if(cc != CC_N) {
-				satisfied = false;
-			}
-			break;
-		// Le résultat précédent doit être négatif ou nul
-		case LE :
-			if(cc != CC_N && cc != CC_Z) {
-				satisfied = false;
-			}
-			break;
-		// Valeur impossible de la condition
-		default: 
-			error(ERR_CONDITION, addr);
+bool check_condition(Machine *pmach, Instruction instr) {
+	switch(instr.instr_generic._regcond){
+		case NC : // Pas de condition, donc toujours vrai
+			return true;
+		case EQ : // Le résultat précédent doit être nul
+			return (pmach->_cc == CC_Z);
+		case NE : // Le résultat précédent doit être non nul
+			return (pmach->_cc != CC_Z);
+		case GT : // Le résultat précédent doit être strictement positif
+			return (pmach->_cc == CC_P);
+		case GE : // Le résultat précédent doit être positif ou nul
+			return (pmach->_cc == CC_P || pmach->_cc == CC_Z);
+		case LT : // Le résultat précédent doit être strictement négatif
+			return (pmach->_cc == CC_N);
+		case LE : // Le résultat précédent doit être négatif ou nul
+			return (pmach->_cc == CC_N || pmach->_cc == CC_Z);
+		default: // Valeur impossible de la condition
+			error(ERR_CONDITION, pmach->_pc-1);
 			break;
 	}
-	return satisfied;
 }
 
 //! Mise à jour du code condition CC
@@ -86,13 +58,12 @@ bool check_condition(unsigned cond, Condition_Code cc, unsigned addr) {
  * \param pmach la machine/programme en cours d'exécution
  * \param reg le numéro du registre dont le signe du contenu nous intéresse
  */
-void update_CC(Machine *pmach, unsigned reg) {
-	Word contenu = pmach->_registers[reg];
-	if(contenu < 0) {
+void update_CC(Machine *pmach, Instruction instr) {
+	if(pmach->_registers[instr.instr_generic._regcond] < 0) {
 		pmach->_cc = CC_N;
-	} else if (contenu > 0) {
+	} else if (pmach->_registers[instr.instr_generic._regcond] > 0) {
 		pmach->_cc = CC_P;
-	} else { //contenu == 0
+	} else { //pmach->_registers[instr.instr_generic._regcond] == 0
 		pmach->_cc = CC_Z;
 	}
 }
@@ -106,17 +77,16 @@ void update_CC(Machine *pmach, unsigned reg) {
 void check_seg_data(Machine *pmach, unsigned addr_mem) {
 	if(addr_mem < 0 || addr_mem > pmach->_datasize-1) {
 		error(ERR_SEGDATA, pmach->_pc-1);
-	}
+	} 
 }
 
-//! Vérifie que l'adresse appartient bien au segment de Données
+//! Vérifie que sp pointe bien le segment de Données
 /*!
  * Si on est en-dehors du segment, on affiche une erreur (arrêt programme)
  * \param pmach la machine/programme en cours d'exécution
- * \param addr_mem l'adresse mémoire à laquelle on veut accéder
  */
-void check_seg_stack(Machine *pmach, unsigned addr_mem) {
-	if(addr_mem < pmach->_dataend || addr_mem > pmach->_datasize-1) {
+void check_seg_stack(Machine *pmach) {
+	if (pmach->_sp < pmach->_dataend || pmach->_sp >= pmach->_datasize) {
 		error(ERR_SEGSTACK, pmach->_pc-1);
 	}
 }
@@ -129,7 +99,7 @@ void check_seg_stack(Machine *pmach, unsigned addr_mem) {
  */
 void check_seg_registers(Machine *pmach, unsigned reg) {
 	if(reg < 0 || reg > NREGISTERS - 1) {
-		error(ERR_UNKNOWN, pmach->_pc-1);
+		error(ERR_ILLEGAL, pmach->_pc-1);
 	}
 }
 
@@ -168,10 +138,10 @@ void load(Machine *pmach, Instruction instr){
 		pmach->_registers[instr.instr_immediate._regcond] = instr.instr_immediate._value;
 	// Cas I = 0 : R ← Data[Addr]
 	} else {
-		pmach->_registers[instr.instr_generic._regcond] = generate_address(pmach,instr);
+		pmach->_registers[instr.instr_generic._regcond] = pmach->_data[generate_address(pmach,instr)];
 	}
 	//Met à jour le code condition
-	update_CC(pmach, instr.instr_generic._regcond);
+	update_CC(pmach, instr);
 }
 
 //! Rangement du contenu d'un registre 
@@ -206,10 +176,10 @@ void add(Machine *pmach, Instruction instr) {
 		pmach->_registers[instr.instr_immediate._regcond] += instr.instr_immediate._value;
 	// Cas I = 0 : R ← (R) + Data[Addr]
 	} else {
-		pmach->_registers[instr.instr_immediate._regcond] += pmach->_data[generate_address(pmach, instr)];
+		pmach->_registers[instr.instr_generic._regcond] += pmach->_data[generate_address(pmach, instr)];
 	}
 	// Met à jour le code condition CC
-	update_CC(pmach, instr.instr_generic._regcond);
+	update_CC(pmach, instr);
 }
 
 //! Soustraction à un registre 
@@ -227,10 +197,10 @@ void sub(Machine *pmach, Instruction instr) {
 		pmach->_registers[instr.instr_immediate._regcond] -= instr.instr_immediate._value;
 	// Cas I = 0 : R ← (R) - Data[Addr]
 	} else {
-		pmach->_registers[instr.instr_immediate._regcond] -= pmach->_data[generate_address(pmach, instr)];
+		pmach->_registers[instr.instr_generic._regcond] -= pmach->_data[generate_address(pmach, instr)];
 	}
 	// Met à jour le code condition CC
-	update_CC(pmach, instr.instr_generic._regcond);
+	update_CC(pmach, instr);
 }
 
 //! Branchement conditionnel ou non à une adresse
@@ -245,7 +215,7 @@ void branch(Machine *pmach, Instruction instr) {
 	// Vérifie qu'on est pas en adressage immédiat 
 	check_immediate(instr, pmach->_pc-1);
 	// Vérifie que la condition est satisfaite
-	if(check_condition(instr.instr_generic._regcond, pmach->_cc, pmach->_pc-1)){
+	if(check_condition(pmach, instr)){
 		pmach->_pc = generate_address(pmach, instr);
 	}
 }
@@ -262,11 +232,10 @@ void call(Machine *pmach, Instruction instr) {
 	// Vérifie qu'on est pas en adressage immédiat 
 	check_immediate(instr, pmach->_pc-1);
 	// Vérifie que la condition est satisfaite
-	if(check_condition(instr.instr_generic._regcond, pmach->_cc, pmach->_pc-1)) {
+	if(check_condition(pmach, instr)) {
 		// Vérifie qu'il y a assez de place pour empiler dans la pile
-		check_seg_stack(pmach, pmach->_sp);
-		pmach->_data[pmach->_sp] = pmach->_pc; // Data[(SP)] ← (PC)
-		pmach->_sp -= 1; // SP ← (SP) - 1
+		check_seg_stack(pmach);
+		pmach->_data[pmach->_sp--] = pmach->_pc; // Data[(SP)] ← (PC) et SP ← (SP) - 1
 		pmach->_pc = generate_address(pmach, instr); // PC ← Addr
 	}
 }
@@ -280,7 +249,7 @@ void call(Machine *pmach, Instruction instr) {
 void ret(Machine *pmach, Instruction instr){
 	pmach->_sp += 1; // SP ← (SP) + 1
 	//Vérifie qu'on est pas sorti de la pile 
-	check_seg_stack(pmach, pmach->_sp);
+	check_seg_stack(pmach);
 	pmach->_pc = pmach->_data[pmach->_sp]; // PC ← Data[(SP)]
 }
 
@@ -296,15 +265,14 @@ void ret(Machine *pmach, Instruction instr){
  */
 void push(Machine *pmach, Instruction instr) {
 	// Vérifie que l'on est bien dans la pile
-	check_seg_stack(pmach,pmach->_sp);
-	// Cas I = 1 : Data[(SP)] = Val
+	check_seg_stack(pmach);
+	// Cas I = 1 : Data[(SP)] = Val  et SP ← (SP) - 1
 	if(instr.instr_generic._immediate) {
-		pmach->_data[pmach->_sp] = instr.instr_immediate._value;
-	// Cas I = 0 : Data[(SP)] = Data[Addr]
+		pmach->_data[pmach->_sp--] = instr.instr_immediate._value;
+	// Cas I = 0 : Data[(SP)] = Data[Addr]  et SP ← (SP) - 1
 	} else {
-		pmach->_data[pmach->_sp] = pmach->_data[generate_address(pmach, instr)];
+		pmach->_data[pmach->_sp--] = pmach->_data[generate_address(pmach, instr)];
 	}
-	pmach->_sp -= 1; // SP ← (SP) - 1
 }
 
 //! Dépilement de la pile d'exécution
@@ -321,7 +289,7 @@ void pop(Machine *pmach, Instruction instr) {
 	check_immediate(instr, pmach->_pc-1);
 	pmach->_sp += 1; // SP ← (SP) + 1
 	// Vérifie qu'on est pas sortie de la pile
-	check_seg_stack(pmach, pmach->_sp);
+	check_seg_stack(pmach);
 	pmach->_data[generate_address(pmach, instr)] = pmach->_data[pmach->_sp]; // Data[Addr] ← Data[(SP)]
 }
 
