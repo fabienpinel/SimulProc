@@ -118,7 +118,7 @@ void check_seg_data(Machine *pmach, unsigned addr_mem, unsigned addr_instr) {
  */
 void check_seg_stack(Machine *pmach, unsigned addr_mem) {
 	if(addr_mem < pmach->_dataend || addr_mem > pmach->_datasize-1) {
-		error(ERR_SEGSTACK, pmach->_pc);
+		error(ERR_SEGSTACK, pmach->_pc-1);
 	}
 }
 
@@ -130,7 +130,7 @@ void check_seg_stack(Machine *pmach, unsigned addr_mem) {
  */
 void check_seg_registers(Machine *pmach, unsigned reg) {
 	if(reg < 0 || reg > NREGISTERS - 1) {
-		error(ERR_ILLEGAL, pmach->_pc);
+		error(ERR_ILLEGAL, pmach->_pc-1);
 	}
 }
 
@@ -149,7 +149,8 @@ unsigned generate_address(Machine *pmach, Instruction instr){
 	} else {
 		address = instr.instr_absolute._address;
 	}
-	check_seg_data(pmach,address,pmach->_pc);
+	// Vérifie que l'adresse est vaide
+	check_seg_data(pmach,address,pmach->_pc-1);
 	return address;
 }
 
@@ -186,7 +187,7 @@ void store(Machine *pmach, Instruction instr) {
 	// Vérifie que le numéro de registre est cohérent
 	check_seg_registers(pmach, instr.instr_generic._regcond);
 	// Vérifie qu'on est pas en adressage immédiat
-	check_immediate(instr, pmach->_pc);
+	check_immediate(instr, pmach->_pc-1);
 	// Data[Addr] ← R 
 	pmach->_data[generate_address(pmach, instr)] = pmach->_registers[instr.instr_generic._regcond];
 }
@@ -243,9 +244,9 @@ void sub(Machine *pmach, Instruction instr) {
  */
 void branch(Machine *pmach, Instruction instr) {
 	// Vérifie qu'on est pas en adressage immédiat 
-	check_immediate(instr, pmach->_pc);
+	check_immediate(instr, pmach->_pc-1);
 	// Vérifie que la condition est satisfaite
-	if(check_condition(instr.instr_generic._regcond, pmach->_cc, pmach->_pc)){
+	if(check_condition(instr.instr_generic._regcond, pmach->_cc, pmach->_pc-1)){
 		pmach->_pc = generate_address(pmach, instr);
 	}
 }
@@ -260,9 +261,9 @@ void branch(Machine *pmach, Instruction instr) {
  */
 void call(Machine *pmach, Instruction instr) {
 	// Vérifie qu'on est pas en adressage immédiat 
-	check_immediate(instr, pmach->_pc);
+	check_immediate(instr, pmach->_pc-1);
 	// Vérifie que la condition est satisfaite
-	if(check_condition(instr.instr_generic._regcond, pmach->_cc, pmach->_pc)) {
+	if(check_condition(instr.instr_generic._regcond, pmach->_cc, pmach->_pc-1)) {
 		// Vérifie qu'il y a assez de place pour empiler dans la pile
 		check_seg_stack(pmach, pmach->_sp);
 		pmach->_data[pmach->_sp] = pmach->_pc; // Data[(SP)] ← (PC)
@@ -318,7 +319,7 @@ void push(Machine *pmach, Instruction instr) {
  */
 void pop(Machine *pmach, Instruction instr) {
 	// Vérifie qu'on est pas en adressage immédiat
-	check_immediate(instr, pmach->_pc);
+	check_immediate(instr, pmach->_pc-1);
 	pmach->_sp += 1; // SP ← (SP) + 1
 	// Vérifie qu'on est pas sortie de la pile
 	check_seg_stack(pmach, pmach->_sp);
@@ -337,7 +338,7 @@ bool decode_execute(Machine *pmach, Instruction instr){
 	switch(instr.instr_generic._cop){
 		// ILLOP est une opération illégale qui provoque l'arrêt du programme
 		case ILLOP :
-			error(ERR_ILLEGAL, pmach->_pc);
+			error(ERR_ILLEGAL, pmach->_pc-1);
 			break;
 		// NOP est une opération vide, elle ne fait rien
 		case NOP :
@@ -371,12 +372,12 @@ bool decode_execute(Machine *pmach, Instruction instr){
 			break;
 		// HALT indique la fin du programme donc l'arrêt de l'exécution, on retourne faux
 		case HALT :
-			warning(WARN_HALT, pmach->_pc);
+			warning(WARN_HALT, pmach->_pc-1);
 			keepgoing = 0;
 			break;
 		// Si le code opération ne correspond à aucune instruction, on affiche une erreur
 		default: {
-			error(ERR_UNKNOWN, pmach->_pc);
+			error(ERR_UNKNOWN, pmach->_pc-1);
 		}
 	}	
 	return keepgoing;
