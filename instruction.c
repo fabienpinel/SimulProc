@@ -51,6 +51,7 @@
  void print_registre(Instruction instr){
 	if(instr.instr_generic._regcond>10)
  	printf("R%d ",instr.instr_generic._regcond );
+ else 
  	printf("R0%d ",instr.instr_generic._regcond );
  }
 
