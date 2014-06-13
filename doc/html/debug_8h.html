@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<meta name="generator" content="Doxygen 1.8.6"/>
+<meta name="generator" content="Doxygen 1.8.4"/>
 <title>Simulateur du jeu d&#39;instructions d&#39;un processeur simple: Référence du fichier debug.h</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -32,7 +32,7 @@
 </table>
 </div>
 <!-- end header part -->
-<!-- Généré par Doxygen 1.8.6 -->
+<!-- Généré par Doxygen 1.8.4 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Page&#160;principale</span></a></li>
@@ -113,7 +113,7 @@ Fonctions</h2></td></tr>
           <td class="memname">bool debug_ask </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structMachine.html">Machine</a> *&#160;</td>
-          <td class="paramname"><em>pmach</em></td><td>)</td>
+          <td class="paramname"><em>pmach</em>)</td><td></td>
           <td></td>
         </tr>
       </table>
@@ -129,6 +129,84 @@ Fonctions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Renvoie</dt><dd>vrai si l'on doit continuer en mode debug, faux sinon </dd></dl>
 
+<p>Définition à la ligne <a class="el" href="debug_8c_source.html#l00028">28</a> du fichier <a class="el" href="debug_8c_source.html">debug.c</a>.</p>
+
+<p>Références <a class="el" href="debug_8c_source.html#l00013">options()</a>, <a class="el" href="machine_8c_source.html#l00313">print_cpu()</a>, <a class="el" href="machine_8c_source.html#l00291">print_data()</a>, et <a class="el" href="machine_8c_source.html#l00266">print_program()</a>.</p>
+
+<p>Référencé par <a class="el" href="machine_8c_source.html#l00341">simul()</a>.</p>
+<div class="fragment"><div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;                              {</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keywordtype">int</span> c;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordflow">while</span>(<span class="keyword">true</span>){</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        printf(<span class="stringliteral">&quot;DEBUG? &quot;</span>);</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        c = getchar();</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <span class="keywordflow">switch</span>(c){</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            <span class="comment">/* step by step (next instruction) */</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;\n&#39;</span>: <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;            <span class="comment">/* continue (exit interactive debug mode) */</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;c&#39;</span>: <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            <span class="comment">/* help */</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;h&#39;</span>: </div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                <a class="code" href="debug_8c.html#a8fe958393b9fa14495018f9108b576eb">options</a>();</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <span class="comment">/* step by step (next instruction) */</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;s&#39;</span>: <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            <span class="comment">/* print registers */</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;r&#39;</span>:</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                <a class="code" href="machine_8c.html#a87cfff30238b966cfc3c0c416d7076e9" title="Affichage des registres du CPU. ">print_cpu</a>(pmach);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;            <span class="comment">/* print data memory */</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;d&#39;</span>:</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                <a class="code" href="machine_8c.html#a549be6eaf631d871e9357513c748640d" title="Affichage des données du programme. ">print_data</a>(pmach);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            <span class="comment">/* print text (program) memory */</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;t&#39;</span>:</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;p&#39;</span>:</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                <a class="code" href="machine_8c.html#aba3ce4987ef379073d9d3f31debf89e7" title="Affichage des instructions du programme. ">print_program</a>(pmach);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;            <span class="comment">/* print registers and data memory */</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;m&#39;</span>:</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                <a class="code" href="machine_8c.html#a87cfff30238b966cfc3c0c416d7076e9" title="Affichage des registres du CPU. ">print_cpu</a>(pmach);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                <a class="code" href="machine_8c.html#a549be6eaf631d871e9357513c748640d" title="Affichage des données du programme. ">print_data</a>(pmach);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;            <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        }</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        <span class="comment">/* On vide sdin pour ne pas que cela soit interpreté comme des commandes  */</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        <span class="keywordtype">int</span> t;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <span class="keywordflow">do</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        {</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;            t = getchar();</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        } <span class="keywordflow">while</span>(t != <span class="charliteral">&#39;\n&#39;</span> &amp;&amp; t != EOF);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    }</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    printf(<span class="stringliteral">&quot;\n&quot;</span>);</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;}</div>
+</div><!-- fragment -->
+<p><div id="dynsection-2" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-2-trigger" src="closed.png" alt="+"/> Voici le graphe d'appel pour cette fonction :</div>
+<div id="dynsection-2-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-2-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="debug_8h_a3a88fdc680b7a1ae8c4c7c8ddee730ab_cgraph.png" border="0" usemap="#debug_8h_a3a88fdc680b7a1ae8c4c7c8ddee730ab_cgraph" alt=""/></div>
+<map name="debug_8h_a3a88fdc680b7a1ae8c4c7c8ddee730ab_cgraph" id="debug_8h_a3a88fdc680b7a1ae8c4c7c8ddee730ab_cgraph">
+</map>
+</div>
+</p>
+
+<p><div id="dynsection-3" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-3-trigger" src="closed.png" alt="+"/> Voici le graphe des appelants de cette fonction :</div>
+<div id="dynsection-3-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-3-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="debug_8h_a3a88fdc680b7a1ae8c4c7c8ddee730ab_icgraph.png" border="0" usemap="#debug_8h_a3a88fdc680b7a1ae8c4c7c8ddee730ab_icgraph" alt=""/></div>
+<map name="debug_8h_a3a88fdc680b7a1ae8c4c7c8ddee730ab_icgraph" id="debug_8h_a3a88fdc680b7a1ae8c4c7c8ddee730ab_icgraph">
+</map>
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
@@ -137,9 +215,9 @@ Fonctions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="debug_8h.html">debug.h</a></li>
-    <li class="footer">Généré le Mercredi 4 Juin 2014 08:58:05 pour Simulateur du jeu d&#39;instructions d&#39;un processeur simple par
+    <li class="footer">Généré le Vendredi Juin 13 2014 11:07:44 pour Simulateur du jeu d'instructions d'un processeur simple par
     <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.4 </li>
   </ul>
 </div>
 </body>

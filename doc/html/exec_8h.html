@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<meta name="generator" content="Doxygen 1.8.6"/>
+<meta name="generator" content="Doxygen 1.8.4"/>
 <title>Simulateur du jeu d&#39;instructions d&#39;un processeur simple: Référence du fichier exec.h</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -32,7 +32,7 @@
 </table>
 </div>
 <!-- end header part -->
-<!-- Généré par Doxygen 1.8.6 -->
+<!-- Généré par Doxygen 1.8.4 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Page&#160;principale</span></a></li>
@@ -80,6 +80,15 @@ $(document).ready(function(){initNavTree('exec_8h.html','');});
 <div class="center"><img src="exec_8h__incl.png" border="0" usemap="#exec_8h" alt=""/></div>
 <map name="exec_8h" id="exec_8h">
 <area shape="rect" id="node2" href="machine_8h.html" title="Description de la structure du processeur et de sa mémoire. " alt="" coords="42,80,123,107"/><area shape="rect" id="node4" href="instruction_8h.html" title="Description du jeu d&#39;instruction. " alt="" coords="79,155,169,181"/></map>
+</div>
+</div><div class="textblock"><div id="dynsection-1" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> Ce graphe montre quels fichiers incluent directement ou indirectement ce fichier :</div>
+<div id="dynsection-1-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-1-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="exec_8h__dep__incl.png" border="0" usemap="#exec_8hdep" alt=""/></div>
+<map name="exec_8hdep" id="exec_8hdep">
+</map>
 </div>
 </div>
 <p><a href="exec_8h_source.html">Aller au code source de ce fichier.</a></p>
@@ -132,6 +141,84 @@ Fonctions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Renvoie</dt><dd>faux après l'exécution de <code>HALT</code> ; vrai sinon </dd></dl>
 
+<p>Définition à la ligne <a class="el" href="exec_8c_source.html#l00302">302</a> du fichier <a class="el" href="exec_8c_source.html">exec.c</a>.</p>
+
+<p>Références <a class="el" href="instruction_8h_source.html#l00060">Instruction::_cop</a>, <a class="el" href="machine_8h_source.html#l00082">Machine::_pc</a>, <a class="el" href="instruction_8h_source.html#l00019">ADD</a>, <a class="el" href="exec_8c_source.html#l00171">add()</a>, <a class="el" href="instruction_8h_source.html#l00021">BRANCH</a>, <a class="el" href="exec_8c_source.html#l00214">branch()</a>, <a class="el" href="instruction_8h_source.html#l00022">CALL</a>, <a class="el" href="exec_8c_source.html#l00231">call()</a>, <a class="el" href="error_8h_source.html#l00022">ERR_ILLEGAL</a>, <a class="el" href="error_8h_source.html#l00021">ERR_UNKNOWN</a>, <a class="el" href="error_8c_source.html#l00024">error()</a>, <a class="el" href="instruction_8h_source.html#l00026">HALT</a>, <a class="el" href="instruction_8h_source.html#l00015">ILLOP</a>, <a class="el" href="unionInstruction.html#a5903d65905a4fd4f8c917ed17d9d9211">Instruction::instr_generic</a>, <a class="el" href="instruction_8h_source.html#l00017">LOAD</a>, <a class="el" href="exec_8c_source.html#l00133">load()</a>, <a class="el" href="instruction_8h_source.html#l00016">NOP</a>, <a class="el" href="instruction_8h_source.html#l00025">POP</a>, <a class="el" href="exec_8c_source.html#l00287">pop()</a>, <a class="el" href="instruction_8h_source.html#l00024">PUSH</a>, <a class="el" href="exec_8c_source.html#l00266">push()</a>, <a class="el" href="instruction_8h_source.html#l00023">RET</a>, <a class="el" href="exec_8c_source.html#l00249">ret()</a>, <a class="el" href="instruction_8h_source.html#l00018">STORE</a>, <a class="el" href="exec_8c_source.html#l00155">store()</a>, <a class="el" href="instruction_8h_source.html#l00020">SUB</a>, <a class="el" href="exec_8c_source.html#l00192">sub()</a>, <a class="el" href="error_8h_source.html#l00040">WARN_HALT</a>, et <a class="el" href="error_8c_source.html#l00046">warning()</a>.</p>
+
+<p>Référencé par <a class="el" href="machine_8c_source.html#l00341">simul()</a>.</p>
+<div class="fragment"><div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;                                                      {</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;    <span class="keywordtype">bool</span> keepgoing = 1;</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    <span class="comment">// Le code opération nous dit quelle instruction est à exécuter</span></div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    <span class="keywordflow">switch</span>(instr.<a class="code" href="unionInstruction.html#a5903d65905a4fd4f8c917ed17d9d9211" title="Format générique : les premiers champs sont communs. ">instr_generic</a>.<a class="code" href="unionInstruction.html#a5682ffc6f762bda7a50e41ea9042cb39" title="Code opération. ">_cop</a>){</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;        <span class="comment">// ILLOP est une opération illégale qui provoque l&#39;arrêt du programme</span></div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="instruction_8h.html#a5ead9d7413d75b14e895c945daa82de6ad1bcea5caa46727ab4e411cffaa236f2" title="Instruction illégale. ">ILLOP</a> :</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;            <a class="code" href="error_8c.html#a531bb138b38aef758b45a442aa53938a" title="Affichage d&#39;une erreur et fin du simulateur. ">error</a>(<a class="code" href="error_8h.html#a2c3e4bb40f36b262a5214e2da2bca9c5aeb345404de9786d0956657072a6c552e" title="Instruction illégale. ">ERR_ILLEGAL</a>, pmach-&gt;<a class="code" href="structMachine.html#a1b3345874b1ade4324f16f3e03944675" title="Compteur ordinal. ">_pc</a>-1);</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;        <span class="comment">// NOP est une opération vide, elle ne fait rien</span></div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="instruction_8h.html#a5ead9d7413d75b14e895c945daa82de6af811bef354b292ff0713c50d7652c026" title="Instruction sans effet. ">NOP</a> :</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="instruction_8h.html#a5ead9d7413d75b14e895c945daa82de6a972dbcdf74cff71e20bdcfb53be9c391" title="Chargement d&#39;un registre. ">LOAD</a> :</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;            <a class="code" href="exec_8c.html#aca81edd78398b596708967b60337c1f0" title="Chargement d&#39;un registre. ">load</a>(pmach, instr);</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="instruction_8h.html#a5ead9d7413d75b14e895c945daa82de6afeb01cb4572ba190cd7932e49446c480" title="Rangement du contenu d&#39;un registre. ">STORE</a> :</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;            <a class="code" href="exec_8c.html#aad77a1b335938ed490ff6fa81c91aa31" title="Rangement du contenu d&#39;un registre. ">store</a>(pmach, instr);</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="instruction_8h.html#a5ead9d7413d75b14e895c945daa82de6acfcf145f2788bf340ff3f3098bc54909" title="Addition à un registre. ">ADD</a> :</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;            <a class="code" href="exec_8c.html#a02dd238df24e0df4a439a1cd7e9b93a4" title="Addition à un registre. ">add</a>(pmach, instr);</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="instruction_8h.html#a5ead9d7413d75b14e895c945daa82de6a12b733d4941495e86811fe6ceeeff9da" title="Soustraction d&#39;un registre. ">SUB</a> :</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;            <a class="code" href="exec_8c.html#a1aed431fafd824ddfa6f6970edc63da9" title="Soustraction à un registre. ">sub</a>(pmach, instr);</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="instruction_8h.html#a5ead9d7413d75b14e895c945daa82de6ad9b20a9207fb2cd3021b9eb0b7c6fe5e" title="Branchement conditionnel ou non. ">BRANCH</a> :</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;            <a class="code" href="exec_8c.html#aa7127602db061c98fcbaf3151e186848" title="Branchement conditionnel ou non à une adresse. ">branch</a>(pmach, instr);</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="instruction_8h.html#a5ead9d7413d75b14e895c945daa82de6abd0ebc08c262bab82a1882256d2d66e8" title="Appel de sous-programme. ">CALL</a> :</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;            <a class="code" href="exec_8c.html#aa28f724d00128b72c7edbbaf3d80bd5c" title="Appel d&#39;un sous-programme. ">call</a>(pmach, instr);</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="instruction_8h.html#a5ead9d7413d75b14e895c945daa82de6ab2510768eaba5e52ba71678e19a65464" title="Retour de sous-programme. ">RET</a> :</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;            <a class="code" href="exec_8c.html#ad1e49ee97c86fad257ef5d9a52d80a62" title="Retour d&#39;un sous-programme. ">ret</a>(pmach, instr);</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="instruction_8h.html#a5ead9d7413d75b14e895c945daa82de6ad263caec619c4d99e4684ba0fabd9493" title="Empilement sur la pile d&#39;exécution. ">PUSH</a> :</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;            <a class="code" href="exec_8c.html#a57493799738ad8d0e926a104efb1a224" title="Empilement sur la pile d&#39;exécution. ">push</a>(pmach,instr);</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="instruction_8h.html#a5ead9d7413d75b14e895c945daa82de6a061dcf4785583d8653942f2d252174fa" title="Dépilement de la pile d&#39;exécution. ">POP</a> :</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;            <a class="code" href="exec_8c.html#ad444b5e6d82fb5758790aeb56529c52a" title="Dépilement de la pile d&#39;exécution. ">pop</a>(pmach,instr);</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;        <span class="comment">// HALT indique la fin du programme donc l&#39;arrêt de l&#39;exécution, on retourne faux</span></div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="instruction_8h.html#a5ead9d7413d75b14e895c945daa82de6aa2fd6bbb0c07e28e835ba595e64df78c" title="Arrêt (normal) du programme. ">HALT</a> :</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;            <a class="code" href="error_8c.html#aec2872edfc57849ea2557178dc2b2673" title="Affichage d&#39;un avertissement. ">warning</a>(<a class="code" href="error_8h.html#af6ea07812363481c623a23ea26fbf8eda5a5baa88988dd74ee8359d6e504c6d77" title="Fin normale du programme (sur HALT) ">WARN_HALT</a>, pmach-&gt;<a class="code" href="structMachine.html#a1b3345874b1ade4324f16f3e03944675" title="Compteur ordinal. ">_pc</a>-1);</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;            keepgoing = 0;</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;        <span class="comment">// Si le code opération ne correspond à aucune instruction, on affiche une erreur</span></div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;        <span class="keywordflow">default</span>: {</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;            <a class="code" href="error_8c.html#a531bb138b38aef758b45a442aa53938a" title="Affichage d&#39;une erreur et fin du simulateur. ">error</a>(<a class="code" href="error_8h.html#a2c3e4bb40f36b262a5214e2da2bca9c5a5c708decdcbd7d8c9fddd8d9e75828a1" title="Instruction inconnue. ">ERR_UNKNOWN</a>, pmach-&gt;<a class="code" href="structMachine.html#a1b3345874b1ade4324f16f3e03944675" title="Compteur ordinal. ">_pc</a>-1);</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;        }</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;    }   </div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;    <span class="keywordflow">return</span> keepgoing;</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;}</div>
+</div><!-- fragment -->
+<p><div id="dynsection-2" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-2-trigger" src="closed.png" alt="+"/> Voici le graphe d'appel pour cette fonction :</div>
+<div id="dynsection-2-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-2-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="exec_8h_a41471ced34d27777447c2609173af7de_cgraph.png" border="0" usemap="#exec_8h_a41471ced34d27777447c2609173af7de_cgraph" alt=""/></div>
+<map name="exec_8h_a41471ced34d27777447c2609173af7de_cgraph" id="exec_8h_a41471ced34d27777447c2609173af7de_cgraph">
+</map>
+</div>
+</p>
+
+<p><div id="dynsection-3" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-3-trigger" src="closed.png" alt="+"/> Voici le graphe des appelants de cette fonction :</div>
+<div id="dynsection-3-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-3-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="exec_8h_a41471ced34d27777447c2609173af7de_icgraph.png" border="0" usemap="#exec_8h_a41471ced34d27777447c2609173af7de_icgraph" alt=""/></div>
+<map name="exec_8h_a41471ced34d27777447c2609173af7de_icgraph" id="exec_8h_a41471ced34d27777447c2609173af7de_icgraph">
+</map>
+</div>
+</p>
+
 </div>
 </div>
 <a class="anchor" id="aae353f8fd7ccdbebd6c37fc0f75d12d3"></a>
@@ -182,6 +269,39 @@ Fonctions</h2></td></tr>
   </dd>
 </dl>
 
+<p>Définition à la ligne <a class="el" href="exec_8c_source.html#l00362">362</a> du fichier <a class="el" href="exec_8c_source.html">exec.c</a>.</p>
+
+<p>Références <a class="el" href="instruction_8c_source.html#l00077">print_instruction()</a>.</p>
+
+<p>Référencé par <a class="el" href="machine_8c_source.html#l00341">simul()</a>.</p>
+<div class="fragment"><div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;                                                                              {</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;    printf(<span class="stringliteral">&quot;TRACE: %s:&quot;</span>,msg);</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;    <a class="code" href="instruction_8c.html#a437080d5e8c504588a47d0dba468492f" title="Impression d&#39;une instruction sous forme lisible (désassemblage) ">print_instruction</a>(instr,addr);</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    printf(<span class="stringliteral">&quot;\n&quot;</span>);</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;}</div>
+</div><!-- fragment -->
+<p><div id="dynsection-4" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-4-trigger" src="closed.png" alt="+"/> Voici le graphe d'appel pour cette fonction :</div>
+<div id="dynsection-4-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-4-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="exec_8h_aae353f8fd7ccdbebd6c37fc0f75d12d3_cgraph.png" border="0" usemap="#exec_8h_aae353f8fd7ccdbebd6c37fc0f75d12d3_cgraph" alt=""/></div>
+<map name="exec_8h_aae353f8fd7ccdbebd6c37fc0f75d12d3_cgraph" id="exec_8h_aae353f8fd7ccdbebd6c37fc0f75d12d3_cgraph">
+</map>
+</div>
+</p>
+
+<p><div id="dynsection-5" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-5-trigger" src="closed.png" alt="+"/> Voici le graphe des appelants de cette fonction :</div>
+<div id="dynsection-5-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-5-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="exec_8h_aae353f8fd7ccdbebd6c37fc0f75d12d3_icgraph.png" border="0" usemap="#exec_8h_aae353f8fd7ccdbebd6c37fc0f75d12d3_icgraph" alt=""/></div>
+<map name="exec_8h_aae353f8fd7ccdbebd6c37fc0f75d12d3_icgraph" id="exec_8h_aae353f8fd7ccdbebd6c37fc0f75d12d3_icgraph">
+</map>
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
@@ -190,9 +310,9 @@ Fonctions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="exec_8h.html">exec.h</a></li>
-    <li class="footer">Généré le Mercredi 4 Juin 2014 08:58:05 pour Simulateur du jeu d&#39;instructions d&#39;un processeur simple par
+    <li class="footer">Généré le Vendredi Juin 13 2014 11:07:44 pour Simulateur du jeu d'instructions d'un processeur simple par
     <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.4 </li>
   </ul>
 </div>
 </body>
